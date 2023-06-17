@@ -8,9 +8,10 @@ OBJS=$(SRCS:.c=.o)
 DEPS=$(SRCS:.c=.d)
 BINS=glcombat
 
+OPTIM_LEVEL=0
 CFLAGS+=-g
-CFLAGS+=-O0
-LDLIBS+=-lglut -lm
+CFLAGS+=-O$(OPTIM_LEVEL)
+LDLIBS+=-lm
 
 all: $(BINS)  $(SUBDIRS)
 
