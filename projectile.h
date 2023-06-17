@@ -4,7 +4,8 @@
 
 struct projectile {
     struct {
-        int in_use : 1;
+        int is_used : 1;
+        int is_explosion : 1;
     } props;
 
     struct v3f pos;

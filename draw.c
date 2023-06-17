@@ -1,7 +1,6 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
 #include <assert.h>
 
 #include "draw.h"
@@ -140,24 +139,56 @@ void draw_light(int light, struct v3f pos, struct c4f col) {
 	glPopMatrix();
 }
 
-void draw_projectile(struct v3f pos) {
+void draw_projectile(struct v3f pos, struct v3f vel) {
 
-	printf("draw_projectile.pos x %f y %f z %f \n", pos.x, pos.y, pos.z);
+	printf("draw_projectile pos x %f y %f z %f ", pos.x, pos.y, pos.z);
+	printf("vel x %f y %f z %f \n", vel.x, vel.y, vel.z);
+	printf("\n");
 
-	GLfloat YELLOW[]  = { 1, 1, 0, 0.2 };
+	const GLfloat ORANGE[]  = { 1, 0.647, 0, 1 };
 
 	glDisable(GL_LIGHTING);
 	glEnable (GL_BLEND);
 	glDepthMask (GL_FALSE);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 
-	glPointSize(5.0);
-	glBegin(GL_POINTS);
-		glColor4fv(YELLOW);
+	glBegin(GL_LINES);
+		glColor4fv(ORANGE);
 		glVertex3fv(v3f_to_f3v(&pos)); nb_call_gl_Vertex3fv++;
+		struct v3f end = v3f_sub(pos, v3f_mul(vel, 1.0/20));
+		glVertex3fv(v3f_to_f3v(&end)); nb_call_gl_Vertex3fv++;
 	glEnd();
 	glDepthMask (GL_TRUE);
 	glDisable (GL_BLEND);
 	glEnable(GL_LIGHTING);
+}
 
+static GLUquadricObj *qobj;
+
+void draw_explosion(struct v3f pos, float size) {
+	printf("draw_explosion pos x %f y %f z %f size %f", pos.x, pos.y, pos.z, size);
+	printf("\n");
+
+	const GLfloat YELLOW[]  = { 1, 1, 0, 0.7 };
+
+	glPushMatrix();
+	glTranslatef(pos.x, pos.y, pos.z);
+
+	glDisable(GL_LIGHTING);
+	glEnable (GL_BLEND);
+	glDepthMask (GL_FALSE);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+
+	glColor4fv(YELLOW);
+
+	if (!qobj) qobj = gluNewQuadric();
+
+	gluQuadricDrawStyle(qobj, GLU_FILL);
+	gluSphere(qobj, size, 8, 8);
+
+	glDepthMask (GL_TRUE);
+	glDisable (GL_BLEND);
+	glEnable(GL_LIGHTING);
+
+	glPopMatrix();
 }

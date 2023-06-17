@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "projectile.h"
+#include "map.h"
 
 static void zero_memory(void *s, size_t n)
 {
@@ -16,8 +17,9 @@ struct projectile* projectile_new(struct v3f pos, struct v3f delta)
 {
     for(int i = 0; i < MAX_BULLETS; i ++) {
         struct projectile *p = bullets + i;
-        if (! p->props.in_use) {
-            p->props.in_use = 1;
+        if (! p->props.is_used) {
+            zero_memory(p, sizeof(struct projectile));
+            p->props.is_used = 1;
             p->pos = pos;
             p->delta = delta;
 
@@ -35,7 +37,7 @@ void projectile_gc()
     max_bullet_idx = 0;
     for(int i = 0; i < MAX_BULLETS; i ++) {
         struct projectile *p = bullets + i;
-        if (p->props.in_use) {
+        if (p->props.is_used) {
             if (max_bullet_idx < i) max_bullet_idx = i;
         }
     }
@@ -52,7 +54,16 @@ void projectile_update_all(uint32_t time_delta_ms)
 
     for(int i = 0; i < MAX_BULLETS; i ++) {
         struct projectile *p = bullets + i;
-        if (! p->props.in_use) {
+        if (! p->props.is_used) {
+            continue;
+        }
+
+        if (p->props.is_explosion) {
+            p->delta.x *= 1.5;
+            if (p->delta.x > 3) {
+                do_gc = 1;
+                p->props.is_used = 0;
+            }
             continue;
         }
 
@@ -65,9 +76,10 @@ void projectile_update_all(uint32_t time_delta_ms)
         p->pos = v3f_add(p->pos, pos_delta_in_time);
 
         // Hitting earth
-        if(p->pos.z < MAP_FLOOR) {
-            p->props.in_use = 0;
-            do_gc = 1;
+        if(p->pos.z < 0) {
+            p->props.is_explosion = 1;
+             p->delta.x = 0.1;
+             p->delta.y = p->delta.z = 0;
         }
     }
 

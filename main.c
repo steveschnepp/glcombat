@@ -1,7 +1,6 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <GL/glu.h>
-#include <GL/glut.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -93,8 +92,8 @@ void setupLights() {
 
 struct obj *cube;
 struct map map;
-int i_step = 1;
-int j_step = 1;
+int i_step = 4;
+int j_step = 4;
 
 int object_rotate_active = 1;
 
@@ -163,8 +162,6 @@ void draw() {
 
 	draw_reference();
 
-//	setupLights();
-
 	draw_options.no_wireframe = 0;
 	draw_map(&map);
 
@@ -176,9 +173,13 @@ void draw() {
 	printf("max_bullet_idx %d \n", max_bullet_idx);
 	for (int i = 0; i < max_bullet_idx; i++) {
 		struct projectile *p = bullets + i;
-		if (! p->props.in_use) continue;
+		if (! p->props.is_used) continue;
 
-		draw_projectile(p->pos);
+		if (p->props.is_explosion) {
+			draw_explosion(p->pos, p->delta.x);
+		} else {
+			draw_projectile(p->pos, p->delta);
+		}
 	}
 }
 
