@@ -1,3 +1,6 @@
+#ifndef __MAP_H__
+#define __MAP_H__
+
 #include <stdint.h>
 
 #include "object.h"
@@ -11,6 +14,6 @@ struct map {
 	struct obj o;
 };
 
-
-
 void map_load(struct map *map, char *filename);
+
+#endif // __MAP_H__

@@ -6,10 +6,10 @@
 #include "v3f.h"
 
 struct obj_face {
-	uint16_t vertice;
-	uint16_t texture;
-	uint16_t normal;
-	uint16_t dummy; // Aligment
+	uint32_t vertice;
+	uint32_t texture;
+	uint32_t normal;
+	uint32_t dummy; // 4 fields
 };
 
 struct obj_faces {

@@ -11,12 +11,13 @@ LDLIBS+=-lm
 
 all: $(BINS)
 
-sphere: sphere.c
-	$(CC) sphere.c -o sphere -lglut -lGL -lm
+sphere: LDLIBS=-lglut -lGL -lm
 
 test_object: test_object.c ../object.c ../object.h
 
 test_map: test_map.c ../map.c ../map.h ../object.c ../object.h
+
+img2map: LDLIBS=-lgd
 
 clean:
 	rm -f $(OBJS) $(BINS)
