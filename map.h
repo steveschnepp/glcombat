@@ -14,6 +14,7 @@ struct map {
 	struct obj o;
 };
 
-void map_load(struct map *map, char *filename);
+void map_load(struct map *map, char *filename, 	int i_step, int j_step);
+float map_get_height(struct map *map, float x, float y);
 
 #endif // __MAP_H__

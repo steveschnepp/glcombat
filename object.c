@@ -7,6 +7,9 @@
 
 #define MAX_LINE_LEN 64
 
+static int nb_objects = 0;
+static struct obj *objects = 0;
+
 static struct v3f object_parse_v3f(char *line) {
 	struct v3f v = {0};
 	int ret = sscanf(line, "%f %f %f", &v.x, &v.y, &v.z);
@@ -92,14 +95,26 @@ int object_add_face(struct obj *o, struct obj_faces faces_current) {
 	return o->nb_faces;
 }
 
-void object_read_from_file(struct obj *o, char *filename)
-{
-	// Remove the indirect arrays
-	if (o->faces) free(o->faces);
-	if (o->vertices) free(o->vertices);
-	if (o->vertices_texture) free(o->vertices_texture);
-	if (o->vertices_normal) free(o->vertices_normal);
+struct obj *object_get_by_name(char *name) {
+	for (int i = 0; i < nb_objects; i ++) {
+		struct obj *o = objects + i;
 
+		if (strcmp(name, o->name) == 0) {
+			// Found, shortcut evaluation
+			return o;
+		}
+	}
+
+	// Not found
+	return NULL;
+}
+
+struct obj *object_new_from_file(char *filename)
+{
+	nb_objects++;
+	objects = realloc(objects, nb_objects * sizeof(struct obj));
+
+	struct obj *o = objects + (nb_objects - 1);
 	memset(o, 0, sizeof(*o));
 
 	FILE *f = fopen(filename, "r");
@@ -141,4 +156,6 @@ void object_read_from_file(struct obj *o, char *filename)
 	}
 
 	fclose(f);
+
+	return o;
 }

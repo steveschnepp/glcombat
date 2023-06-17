@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "map.h"
 
@@ -15,7 +16,7 @@ static int map_get_vertice(int i, int j, int size_y) {
 	return idx + 1; // obj facets begins with 1
 }
 
-void map_load(struct map *map, char *filename)
+void map_load(struct map *map, char *filename, 	int i_step, int j_step)
 {
 	FILE *f = fopen(filename, "r");
 	struct map MAP = {0};
@@ -51,12 +52,12 @@ void map_load(struct map *map, char *filename)
 	}
 
 	// Faces
-	for (int i = 1; i < MAP.size_x; i++) {
-		for (int j = 1; j < MAP.size_y; j++) {
+	for (int i = i_step; i < MAP.size_x; i+=i_step) {
+		for (int j = j_step; j < MAP.size_y; j+=j_step) {
 			int a =  map_get_vertice(i, j, MAP.size_y);
-			int b =  map_get_vertice(i-1, j, MAP.size_y);
-			int c =  map_get_vertice(i, j-1, MAP.size_y);
-			int d =  map_get_vertice(i-1, j-1, MAP.size_y);
+			int b =  map_get_vertice(i-i_step, j, MAP.size_y);
+			int c =  map_get_vertice(i, j-j_step, MAP.size_y);
+			int d =  map_get_vertice(i-i_step, j-j_step, MAP.size_y);
 
 			struct v3f va = MAP.o.vertices[a-1];
 			struct v3f vb = MAP.o.vertices[b-1];
@@ -142,4 +143,23 @@ void map_load(struct map *map, char *filename)
 	}
 
 	*map = MAP;
+}
+
+float map_get_height(struct map *m, float x, float y)
+{
+	float i_as_f = x / m->unit_x + m->size_x / 2;
+	float j_as_f = y / m->unit_y + m->size_y / 2;
+
+	int i = i_as_f;
+	int j = j_as_f;
+
+	i_as_f -= i;
+	j_as_f -= j;
+
+	assert(i < m->size_x);
+	assert(j < m->size_y);
+
+	float z = *map_get_cell(m, i, j);
+
+	return z;
 }

@@ -8,6 +8,10 @@ struct v3f {
   float x, y, z;
 };
 
+static inline float* v3f_to_f3v(struct v3f *v) {
+	return (float *) v; // Raw cast
+}
+
 static inline struct v3f v3f_create(float x, float y, float z)
 {
   struct v3f this;

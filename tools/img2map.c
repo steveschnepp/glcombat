@@ -2,20 +2,24 @@
 #include <gd.h>
 
 int main(int argc, char **argv) {
-	gdImagePtr im = gdImageCreateFromFile(argv[1]);
 
+	if (argc < 4) return -1;
+
+	gdImagePtr im = gdImageCreateFromFile(argv[1]);
 	FILE* f = fopen(argv[2], "w");
+
+	int scale = (argc > 2) ? atoi(argv[3]) : 12;
 
 	int max_x = gdImageSX(im);
 	int max_y = gdImageSY(im);
-	fprintf(f, "%d %d 1.0 1.0", max_x, max_y);
+	fprintf(f, "%d %d 2.0 2.0", max_x, max_y);
 	fprintf(f, "\n");
 
 	for (int i = 0; i < max_x; i ++) {
 		for (int j = 0; j < max_y; j ++) {
 			int p = gdImageGetTrueColorPixel(im, i, j);
 
-            float h = p * 1.0 / (__UINT32_MAX__ >> 10) ;
+            float h = p * 1.0  / (__UINT32_MAX__ >> scale) ;
 
 			fprintf(f, " %f", h);
 		}

@@ -5,7 +5,7 @@ TOPTARGETS := all clean
 
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
-DEPS = $(SRCS:.c=.d)
+DEPS=$(SRCS:.c=.d)
 BINS=glcombat
 
 CFLAGS+=-g
@@ -23,7 +23,7 @@ $(SUBDIRS):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
 clean: $(SUBDIRS)
-	rm -f $(OBJS) $(BINS)
+	rm -f $(OBJS) $(BINS) $(DEPS)
 
 .PHONY: $(TOPTARGETS) $(SUBDIRS)
 

@@ -6,6 +6,8 @@
 
 #include "draw.h"
 
+extern int nb_call_gl_Vertex3f;
+extern int nb_call_gl_Vertex3fv;
 
 struct draw_options draw_options;
 
@@ -47,20 +49,16 @@ static void draw_obj_gl(struct obj *o) {
 			if (vertice_normal_idx) {
 				vertice_normal_idx --; // off by one in the obj file
 				assert(vertice_normal_idx < o->nb_vertices_normal);
-				float nx = o->vertices_normal[vertice_normal_idx].x;
-				float ny = o->vertices_normal[vertice_normal_idx].y;
-				float nz = o->vertices_normal[vertice_normal_idx].z;
-				glNormal3f(nx, ny, nz);
+				float *n = v3f_to_f3v(& o->vertices_normal[vertice_normal_idx]);
+				glNormal3fv(n);
 			}
 
 			unsigned int vertice_idx = faces.face[j].vertice;
 			if (vertice_idx) {
 				vertice_idx --; // off by one in the obj file
 				assert(vertice_idx < o->nb_vertices);
-				float x = o->vertices[vertice_idx].x;
-				float y = o->vertices[vertice_idx].y;
-				float z = o->vertices[vertice_idx].z;
-				glVertex3f(x, y, z);
+				float *v = v3f_to_f3v(& o->vertices[vertice_idx]);
+				glVertex3fv(v); nb_call_gl_Vertex3fv++;
 			}
 		}
 	}
@@ -89,6 +87,15 @@ void draw_obj(struct obj *o, struct v3f pos, struct v3f rot) {
 		glColor3f(.1, .1, .1);
 		draw_obj_gl(o);
 	}
+
+	glDisable(GL_LIGHTING);
+	glLineWidth(1.0);
+	glBegin(GL_LINES);
+		glColor4f(1, 0, 0, .25);
+		glVertex3f(0, 0, 0); nb_call_gl_Vertex3f++;
+		glVertex3f(0, 0, -100); nb_call_gl_Vertex3f++;
+	glEnd();
+	glEnable(GL_LIGHTING);
 
 	glPopMatrix();
 }
@@ -125,7 +132,7 @@ void draw_light(int light, struct v3f pos, struct c4f col) {
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
 		glColor3fv(light_diffuse);
-		glVertex3fv(light_position);
+		glVertex3fv(light_position); nb_call_gl_Vertex3fv++;
 	glEnd();
 	glEnable(GL_LIGHTING);
 	glPointSize(1.0);

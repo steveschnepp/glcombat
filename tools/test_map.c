@@ -7,7 +7,7 @@ int main(int argc, char **argv) {
 	struct map m = { 0 };
 
 	for (int i = 1; i < argc; i ++) {
-		map_load(&m, argv[i]);
+		map_load(&m, argv[i], 1, 1);
 
 		hexDump("m", &m, sizeof(m), 16);
 		hexDump("m->h", m.h, sizeof(*m.h) * m.size_x * m.size_y, 16);

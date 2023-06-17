@@ -56,3 +56,4 @@ tools/test_map
 tools/test_object
 tools/test_realloc
 tools/norm2obj
+tools/img2map
