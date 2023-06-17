@@ -105,7 +105,7 @@ void update(uint32_t delta_ms) {
 	angleY += 0.1 / 36;
 	angleZ += 0.1 / 36 / 36;
 
-	projectile_update_all(delta_ms);
+	projectile_update_all(delta_ms, &map);
 }
 
 float camera_x = 76.0;
@@ -166,7 +166,7 @@ void draw() {
 	draw_map(&map);
 
 	draw_options.no_wireframe = 0;
-	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), 0};
+	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), map_get_height(&map, pos.x, pos.y) };
 	struct v3f rot = {0, 0, angleX};
 	draw_obj(cube, pos, rot);
 
@@ -184,8 +184,7 @@ void draw() {
 }
 
 void emit_projectile() {
-	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), 0};
-	map_get_height(&map, pos.x, pos.y) + 1.0;
+	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), map_get_height(&map, pos.x, pos.y) };
 	struct v3f vel = { 10 * cosfd(angleX), 10 * sinfd(angleX), 30 };
 
 	projectile_new(pos, vel);

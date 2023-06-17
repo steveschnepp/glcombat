@@ -17,5 +17,7 @@ struct projectile {
 extern int max_bullet_idx;
 extern struct projectile bullets[MAX_BULLETS];
 
+struct map;
+
 struct projectile* projectile_new(struct v3f pos, struct v3f delta);
-void projectile_update_all(uint32_t delta_ms);
+void projectile_update_all(uint32_t time_delta_ms, struct map *map);

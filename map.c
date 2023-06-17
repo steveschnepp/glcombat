@@ -7,7 +7,15 @@
 #define MAP_X 128
 #define MAP_Y 128
 
+static int middle(int min, int i, int max) {
+	if (i < min) return min;
+	if (i > max) return max;
+	return i;
+}
+
 static inline float* map_get_cell(struct map *m, int x, int y) {
+	x = middle(0, x, m->size_x);
+	y = middle(0, y, m->size_y);
 	return m->h + (x * m->size_y) + y;
 }
 
@@ -145,8 +153,14 @@ void map_load(struct map *map, char *filename, 	int i_step, int j_step)
 	*map = MAP;
 }
 
+static float max(float a, float b)
+{
+	return a > b ? a : b;
+}
+
 float map_get_height(struct map *m, float x, float y)
 {
+	// get max for the whole cell
 	float i_as_f = x / m->unit_x + m->size_x / 2;
 	float j_as_f = y / m->unit_y + m->size_y / 2;
 
@@ -159,7 +173,11 @@ float map_get_height(struct map *m, float x, float y)
 	assert(i < m->size_x);
 	assert(j < m->size_y);
 
-	float z = *map_get_cell(m, i, j);
+	float z;
+	z = *map_get_cell(m, i, j);
+	z = max(z, *map_get_cell(m, i+1, j));
+	z = max(z, *map_get_cell(m, i, j+1));
+	z = max(z, *map_get_cell(m, i+1, j+1));
 
 	return z;
 }

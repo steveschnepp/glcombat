@@ -47,7 +47,7 @@ const struct v3f gravity = { 0, 0, -10 }; // g = 10 m/s
 
 #define MAP_FLOOR -100
 
-void projectile_update_all(uint32_t time_delta_ms)
+void projectile_update_all(uint32_t time_delta_ms, struct map *map)
 {
     float time_delta_s = time_delta_ms / 1000.0;
     int do_gc = 0;
@@ -76,7 +76,8 @@ void projectile_update_all(uint32_t time_delta_ms)
         p->pos = v3f_add(p->pos, pos_delta_in_time);
 
         // Hitting earth
-        if(p->pos.z < 0) {
+        float height = map_get_height(map, p->pos.x, p->pos.y);
+        if(p->pos.z < height) {
             p->props.is_explosion = 1;
              p->delta.x = 0.1;
              p->delta.y = p->delta.z = 0;
