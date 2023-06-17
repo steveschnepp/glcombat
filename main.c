@@ -8,9 +8,10 @@
 
 #include <assert.h>
 
-#include "object.h"
-#include "map.h"
 #include "v3f.h"
+#include "object.h"
+#include "projectile.h"
+#include "map.h"
 #include "draw.h"
 
 #define ANTIALIAS 0
@@ -105,6 +106,7 @@ void update(uint32_t delta_ms) {
 	angleY += 0.1 / 36;
 	angleZ += 0.1 / 36 / 36;
 
+	projectile_update_all(delta_ms);
 }
 
 float camera_x = 76.0;
@@ -168,11 +170,24 @@ void draw() {
 
 	draw_options.no_wireframe = 0;
 	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), 0};
-	pos.z = map_get_height(&map, pos.x, pos.y) + 1.0;
 	struct v3f rot = {0, 0, angleX};
 	draw_obj(cube, pos, rot);
 
-	draw_reference();
+	printf("max_bullet_idx %d \n", max_bullet_idx);
+	for (int i = 0; i < max_bullet_idx; i++) {
+		struct projectile *p = bullets + i;
+		if (! p->props.in_use) continue;
+
+		draw_projectile(p->pos);
+	}
+}
+
+void emit_projectile() {
+	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), 0};
+	map_get_height(&map, pos.x, pos.y) + 1.0;
+	struct v3f vel = { 10 * cosfd(angleX), 10 * sinfd(angleX), 30 };
+
+	projectile_new(pos, vel);
 }
 
 
@@ -291,7 +306,7 @@ int main(int argc, char* argv[]) {
 						quit = 1;
 						break;
 					case ' ':
-						object_rotate_active = !object_rotate_active;
+						emit_projectile();
 						break;
 					case 'z':
 					case 'w':

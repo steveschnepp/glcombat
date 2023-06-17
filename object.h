@@ -37,18 +37,6 @@ struct obj {
 	struct bone *bones;
 };
 
-struct bone {
-	char name[OBJ_NAME_LEN];
-
-	struct v3f pos;
-	struct v3f rot;
-
-	char object_name[OBJ_NAME_LEN];
-
-	int nb_bones;
-	struct bone *bones;
-};
-
 void object_set_name(struct obj *o, char *name);
 int object_add_vertex(struct obj *o, struct v3f vertex);
 int object_add_vertex_texture(struct obj *o, struct t2f texture);

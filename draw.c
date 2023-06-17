@@ -139,3 +139,25 @@ void draw_light(int light, struct v3f pos, struct c4f col) {
 
 	glPopMatrix();
 }
+
+void draw_projectile(struct v3f pos) {
+
+	printf("draw_projectile.pos x %f y %f z %f \n", pos.x, pos.y, pos.z);
+
+	GLfloat YELLOW[]  = { 1, 1, 0, 0.2 };
+
+	glDisable(GL_LIGHTING);
+	glEnable (GL_BLEND);
+	glDepthMask (GL_FALSE);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+
+	glPointSize(5.0);
+	glBegin(GL_POINTS);
+		glColor4fv(YELLOW);
+		glVertex3fv(v3f_to_f3v(&pos)); nb_call_gl_Vertex3fv++;
+	glEnd();
+	glDepthMask (GL_TRUE);
+	glDisable (GL_BLEND);
+	glEnable(GL_LIGHTING);
+
+}
