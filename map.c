@@ -63,48 +63,78 @@ void map_load(struct map *map, char *filename)
 			struct v3f vc = MAP.o.vertices[c-1];
 			struct v3f vd = MAP.o.vertices[d-1];
 
+			struct v3f ab = v3f_sub(vb, va);
+			struct v3f db = v3f_sub(vb, vd);
+			struct v3f dc = v3f_sub(vc, vd);
+			struct v3f ac = v3f_sub(vc, va);
+
+			struct v3f bac = v3f_cross_product(ab, ac);
+			struct v3f acd = v3f_cross_product(ac, dc);
+			struct v3f cdb = v3f_cross_product(dc, db);
+			struct v3f dba = v3f_cross_product(db, ab);
+
 			// Autocompute normals
-			int n1, n2;
+			int bac_idx = object_add_vertex_normal(&MAP.o, bac);
+			int acd_idx = object_add_vertex_normal(&MAP.o, acd);
+			int cdb_idx = object_add_vertex_normal(&MAP.o, cdb);
+			int dba_idx = object_add_vertex_normal(&MAP.o, dba);
+
+			// Check which diagonal (B-C or A-D) has the smallest "curvature"
+			if (v3f_square_magnitude(bac) > v3f_square_magnitude(acd))
 			{
-				struct v3f ab = v3f_sub(vb, va);
-				struct v3f ac = v3f_sub(vc, va);
-				struct v3f normal = v3f_cross_product(ab, ac);
+				// Split on A-D
+				{
+					struct obj_faces faces = {0};
+					faces.face[0].vertice = d;
+					faces.face[1].vertice = b;
+					faces.face[2].vertice = a;
 
-				n1 = object_add_vertex_normal(&MAP.o, normal);
-			}
-			{
-				struct v3f cd = v3f_sub(vd, vc);
-				struct v3f cb = v3f_sub(vb, vc);
-				struct v3f normal = v3f_cross_product(cb, cd);
-				n2 = object_add_vertex_normal(&MAP.o, normal);
-			}
+					faces.face[0].normal = dba_idx;
+					faces.face[1].normal = dba_idx;
+					faces.face[2].normal = dba_idx;
 
-			{
-				struct obj_faces faces = {0};
+					object_add_face(&MAP.o, faces);
+				}
 
-				faces.face[0].vertice = a;
-				faces.face[1].vertice = b;
-				faces.face[2].vertice = c;
+				{
+					struct obj_faces faces = {0};
+					faces.face[0].vertice = a;
+					faces.face[1].vertice = c;
+					faces.face[2].vertice = d;
 
-				faces.face[0].normal = n1;
-				faces.face[1].normal = n1;
-				faces.face[2].normal = n1;
+					faces.face[0].normal = acd_idx;
+					faces.face[1].normal = acd_idx;
+					faces.face[2].normal = acd_idx;
 
-				object_add_face(&MAP.o, faces);
-			}
+					object_add_face(&MAP.o, faces);
+				}
+			} else {
+				// Split on B-C
+				{
+					struct obj_faces faces = {0};
+					faces.face[0].vertice = b;
+					faces.face[1].vertice = a;
+					faces.face[2].vertice = c;
 
-			{
-				struct obj_faces faces = {0};
+					faces.face[0].normal = bac_idx;
+					faces.face[1].normal = bac_idx;
+					faces.face[2].normal = bac_idx;
 
-				faces.face[0].vertice = c;
-				faces.face[1].vertice = d;
-				faces.face[2].vertice = b;
+					object_add_face(&MAP.o, faces);
+				}
 
-				faces.face[0].normal = n2;
-				faces.face[1].normal = n2;
-				faces.face[2].normal = n2;
+				{
+					struct obj_faces faces = {0};
+					faces.face[0].vertice = c;
+					faces.face[1].vertice = d;
+					faces.face[2].vertice = b;
 
-				object_add_face(&MAP.o, faces);
+					faces.face[0].normal = cdb_idx;
+					faces.face[1].normal = cdb_idx;
+					faces.face[2].normal = cdb_idx;
+
+					object_add_face(&MAP.o, faces);
+				}
 			}
 		}
 	}
