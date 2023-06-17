@@ -63,78 +63,80 @@ void map_load(struct map *map, char *filename)
 			struct v3f vc = MAP.o.vertices[c-1];
 			struct v3f vd = MAP.o.vertices[d-1];
 
-			struct v3f ab = v3f_sub(vb, va);
-			struct v3f db = v3f_sub(vb, vd);
-			struct v3f dc = v3f_sub(vc, vd);
-			struct v3f ac = v3f_sub(vc, va);
+			// Compute the middle vertex
+			struct v3f ve = va;
+			ve = v3f_add(ve, vb);
+			ve = v3f_add(ve, vc);
+			ve = v3f_add(ve, vd);
+			ve = v3f_div(ve, 4);
+			int e = object_add_vertex(&MAP.o, ve);
 
-			struct v3f bac = v3f_cross_product(ab, ac);
-			struct v3f acd = v3f_cross_product(ac, dc);
-			struct v3f cdb = v3f_cross_product(dc, db);
-			struct v3f dba = v3f_cross_product(db, ab);
+			struct v3f ea = v3f_sub(va, ve);
+			struct v3f eb = v3f_sub(vb, ve);
+			struct v3f ec = v3f_sub(vc, ve);
+			struct v3f ed = v3f_sub(vd, ve);
+
+			struct v3f bea = v3f_cross_product(ea, eb);
+			struct v3f aec = v3f_cross_product(ec, ea);
+			struct v3f ced = v3f_cross_product(ed, ec);
+			struct v3f deb = v3f_cross_product(eb, ed);
 
 			// Autocompute normals
-			int bac_idx = object_add_vertex_normal(&MAP.o, bac);
-			int acd_idx = object_add_vertex_normal(&MAP.o, acd);
-			int cdb_idx = object_add_vertex_normal(&MAP.o, cdb);
-			int dba_idx = object_add_vertex_normal(&MAP.o, dba);
+			int bea_idx = object_add_vertex_normal(&MAP.o, bea);
+			int aec_idx = object_add_vertex_normal(&MAP.o, aec);
+			int ced_idx = object_add_vertex_normal(&MAP.o, ced);
+			int deb_idx = object_add_vertex_normal(&MAP.o, deb);
 
-			// Check which diagonal (B-C or A-D) has the smallest "curvature"
-			if (v3f_square_magnitude(bac) > v3f_square_magnitude(acd))
 			{
-				// Split on A-D
-				{
-					struct obj_faces faces = {0};
-					faces.face[0].vertice = d;
-					faces.face[1].vertice = b;
-					faces.face[2].vertice = a;
+				struct obj_faces faces = {0};
+				faces.face[0].vertice = b;
+				faces.face[1].vertice = e;
+				faces.face[2].vertice = a;
 
-					faces.face[0].normal = dba_idx;
-					faces.face[1].normal = dba_idx;
-					faces.face[2].normal = dba_idx;
+				faces.face[0].normal = bea_idx;
+				faces.face[1].normal = bea_idx;
+				faces.face[2].normal = bea_idx;
 
-					object_add_face(&MAP.o, faces);
-				}
+				object_add_face(&MAP.o, faces);
+			}
 
-				{
-					struct obj_faces faces = {0};
-					faces.face[0].vertice = a;
-					faces.face[1].vertice = c;
-					faces.face[2].vertice = d;
+			{
+				struct obj_faces faces = {0};
+				faces.face[0].vertice = a;
+				faces.face[1].vertice = e;
+				faces.face[2].vertice = c;
 
-					faces.face[0].normal = acd_idx;
-					faces.face[1].normal = acd_idx;
-					faces.face[2].normal = acd_idx;
+				faces.face[0].normal = aec_idx;
+				faces.face[1].normal = aec_idx;
+				faces.face[2].normal = aec_idx;
 
-					object_add_face(&MAP.o, faces);
-				}
-			} else {
-				// Split on B-C
-				{
-					struct obj_faces faces = {0};
-					faces.face[0].vertice = b;
-					faces.face[1].vertice = a;
-					faces.face[2].vertice = c;
+				object_add_face(&MAP.o, faces);
+			}
 
-					faces.face[0].normal = bac_idx;
-					faces.face[1].normal = bac_idx;
-					faces.face[2].normal = bac_idx;
+			{
+				struct obj_faces faces = {0};
+				faces.face[0].vertice = c;
+				faces.face[1].vertice = e;
+				faces.face[2].vertice = d;
 
-					object_add_face(&MAP.o, faces);
-				}
+				faces.face[0].normal = ced_idx;
+				faces.face[1].normal = ced_idx;
+				faces.face[2].normal = ced_idx;
 
-				{
-					struct obj_faces faces = {0};
-					faces.face[0].vertice = c;
-					faces.face[1].vertice = d;
-					faces.face[2].vertice = b;
+				object_add_face(&MAP.o, faces);
+			}
 
-					faces.face[0].normal = cdb_idx;
-					faces.face[1].normal = cdb_idx;
-					faces.face[2].normal = cdb_idx;
+			{
+				struct obj_faces faces = {0};
+				faces.face[0].vertice = d;
+				faces.face[1].vertice = e;
+				faces.face[2].vertice = b;
 
-					object_add_face(&MAP.o, faces);
-				}
+				faces.face[0].normal = deb_idx;
+				faces.face[1].normal = deb_idx;
+				faces.face[2].normal = deb_idx;
+
+				object_add_face(&MAP.o, faces);
 			}
 		}
 	}
