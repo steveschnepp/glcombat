@@ -150,6 +150,8 @@ void map_load(struct map *map, char *filename, 	int i_step, int j_step)
 		}
 	}
 
+	object_compile_arrays(&MAP.o);
+
 	*map = MAP;
 }
 

@@ -92,8 +92,8 @@ void setupLights() {
 
 struct obj *cube;
 struct map map;
-int i_step = 4;
-int j_step = 4;
+int i_step = 1;
+int j_step = 1;
 
 int object_rotate_active = 1;
 
@@ -162,10 +162,8 @@ void draw() {
 
 	draw_reference();
 
-	draw_options.no_wireframe = 0;
 	draw_map(&map);
 
-	draw_options.no_wireframe = 0;
 	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), map_get_height(&map, pos.x, pos.y) };
 	struct v3f rot = {0, 0, angleX};
 	draw_obj(cube, pos, rot);
@@ -204,7 +202,6 @@ int main(int argc, char* argv[]) {
 
 	// Initialization de OpenGL
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_NORMALIZE);
 
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 

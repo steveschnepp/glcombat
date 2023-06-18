@@ -43,7 +43,7 @@ static inline void hexDump (
             if (i != 0) printf ("  %s\n", buff);
 
             // Output the offset of current line.
-            printf ("  %04x ", i);
+            printf ("  %08x ", i);
         }
 
         // Now the hex code for the specific character.

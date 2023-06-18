@@ -8,8 +8,6 @@
 extern int nb_call_gl_Vertex3f;
 extern int nb_call_gl_Vertex3fv;
 
-struct draw_options draw_options;
-
 static void draw_obj_gl(struct obj *o);
 static void draw_map_gl(struct map *m);
 
@@ -20,48 +18,27 @@ static void draw_map_gl(struct map *m) {
 void draw_map(struct map *m) {
 	glPushMatrix();
 
-	if (!draw_options.no_fill) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
-		glEnable( GL_POLYGON_OFFSET_FILL );
-		glPolygonOffset( 1.0, 1.0 );
-		glColor3f(1, 1, 1);
-		draw_map_gl(m);
-	}
-
-	if (!draw_options.no_wireframe) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE  );
-		glDisable( GL_POLYGON_OFFSET_FILL );
-		glColor3f(.1, .1, .1);
-		draw_map_gl(m);
-	}
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
+	glEnable( GL_POLYGON_OFFSET_FILL );
+	glPolygonOffset( 1.0, 1.0 );
+	glColor3f(1, 1, 1);
+	draw_map_gl(m);
 
 	glPopMatrix();
 }
 
 static void draw_obj_gl(struct obj *o) {
-	glBegin(GL_TRIANGLES);
-	for (int i = 0; i < o->nb_faces; i++) {
-		for (int j = 0; j < 3; j++) {
-			struct obj_faces faces = o->faces[i];
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
 
-			unsigned int vertice_normal_idx = faces.face[j].normal;
-			if (vertice_normal_idx) {
-				vertice_normal_idx --; // off by one in the obj file
-				assert(vertice_normal_idx < o->nb_vertices_normal);
-				float *n = v3f_to_f3v(& o->vertices_normal[vertice_normal_idx]);
-				glNormal3fv(n);
-			}
+	glVertexPointer(3, GL_FLOAT, 0, o->vertices_array);
+	glNormalPointer(GL_FLOAT, 0, o->vertices_normal_array);
 
-			unsigned int vertice_idx = faces.face[j].vertice;
-			if (vertice_idx) {
-				vertice_idx --; // off by one in the obj file
-				assert(vertice_idx < o->nb_vertices);
-				float *v = v3f_to_f3v(& o->vertices[vertice_idx]);
-				glVertex3fv(v); nb_call_gl_Vertex3fv++;
-			}
-		}
-	}
-	glEnd();
+	printf("glDrawArrays size %d \n", o->nb_faces * 3);
+	glDrawArrays(GL_TRIANGLES, 0, o->nb_faces * 3);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
 void draw_obj(struct obj *o, struct v3f pos, struct v3f rot) {
@@ -72,7 +49,7 @@ void draw_obj(struct obj *o, struct v3f pos, struct v3f rot) {
 	glRotatef(rot.y, 0, 1, 0);
 	glRotatef(rot.z, 0, 0, 1);
 
-	if (!draw_options.no_fill) {
+	if (!o->options.skip_solid) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
 		glEnable( GL_POLYGON_OFFSET_FILL );
 		glPolygonOffset( 1.0, 1.0 );
@@ -80,7 +57,7 @@ void draw_obj(struct obj *o, struct v3f pos, struct v3f rot) {
 		draw_obj_gl(o);
 	}
 
-	if (!draw_options.no_wireframe) {
+	if (o->options.wireframe) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE  );
 		glDisable( GL_POLYGON_OFFSET_FILL );
 		glColor3f(.1, .1, .1);

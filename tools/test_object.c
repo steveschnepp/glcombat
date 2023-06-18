@@ -14,5 +14,7 @@ int main(int argc, char **argv) {
 		hexDump("o->vertices", o->vertices, sizeof(*o->vertices) * o->nb_vertices, 16);
 		hexDump("o->vertices_texture", o->vertices_texture, sizeof(*o->vertices_texture) * o->nb_vertices_texture, 16);
 		hexDump("o->vertices_normal", o->vertices_normal, sizeof(*o->vertices_normal) * o->nb_vertices_normal, 16);
+		hexDump("o->vertices_array", o->vertices_array, sizeof(*o->vertices_array) * o->nb_faces * 3, 16);
+		hexDump("o->vertices_normal_array", o->vertices_normal_array, sizeof(*o->vertices_normal_array) * o->nb_faces * 3, 16);
 	}
 }

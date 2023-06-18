@@ -53,7 +53,7 @@ int object_add_vertex_normal(struct obj *o, struct v3f vertices_normal_current) 
 	// add a new vertex
 	o->nb_vertices_normal += 1;
 	o->vertices_normal = realloc(o->vertices_normal, o->nb_vertices_normal * sizeof(struct v3f));
-	o->vertices_normal[o->nb_vertices_normal-1] = vertices_normal_current;
+	o->vertices_normal[o->nb_vertices_normal-1] = v3f_normalize(vertices_normal_current);
 
 	return o->nb_vertices_normal;
 }
@@ -157,5 +157,36 @@ struct obj *object_new_from_file(char *filename)
 
 	fclose(f);
 
+	object_compile_arrays(o);
+
 	return o;
+}
+
+int object_compile_arrays(struct obj *o) {
+	o->vertices_array = calloc(o->nb_faces * 3, sizeof(struct v3f));
+	o->vertices_normal_array = calloc(o->nb_faces * 3, sizeof(struct v3f));
+
+	for (int i = 0; i < o->nb_faces; i++) {
+		for (int j = 0; j < 3; j++) {
+			int compiled_idx = i*3+j;
+			struct obj_faces faces = o->faces[i];
+			struct obj_face face = faces.face[j];
+
+			unsigned int vertice_normal_idx = face.normal;
+			if (vertice_normal_idx) {
+				vertice_normal_idx --; // off by one in the obj file
+				assert(vertice_normal_idx < o->nb_vertices_normal);
+				o->vertices_normal_array[compiled_idx] = o->vertices_normal[vertice_normal_idx];
+			}
+
+			unsigned int vertice_idx = face.vertice;
+			if (vertice_idx) {
+				vertice_idx --; // off by one in the obj file
+				assert(vertice_idx < o->nb_vertices);
+				o->vertices_array[compiled_idx] = o->vertices[vertice_idx];
+			}
+		}
+	}
+
+	return o->nb_faces;
 }

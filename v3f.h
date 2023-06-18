@@ -94,4 +94,9 @@ static inline struct v3f v3f_cross_product(struct v3f v1, struct v3f v2)
   return res;
 }
 
+static inline struct v3f v3f_cross_product_normal(struct v3f v1, struct v3f v2)
+{
+	return v3f_normalize(v3f_cross_product(v1, v2));
+}
+
 #endif // __V3F_H__
