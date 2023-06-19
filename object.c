@@ -10,6 +10,19 @@
 static int nb_objects = 0;
 static struct obj *objects = 0;
 
+#define QUANTIZE 4096
+static int quantize(int i) {
+	i /= QUANTIZE;
+	i ++;
+	i *= QUANTIZE;
+	return i;
+}
+
+static void *xrealloc(void *p, size_t s) {
+	s = quantize(s);
+	return realloc(p, s);
+}
+
 static struct v3f object_parse_v3f(char *line) {
 	struct v3f v = {0};
 	int ret = sscanf(line, "%f %f %f", &v.x, &v.y, &v.z);
@@ -34,7 +47,7 @@ void object_set_name(struct obj *o, char *name) {
 int object_add_vertex(struct obj *o, struct v3f vertices_current) {
 	// add a new vertex
 	o->nb_vertices += 1;
-	o->vertices = realloc(o->vertices, o->nb_vertices * sizeof(struct v3f));
+	o->vertices = xrealloc(o->vertices, o->nb_vertices * sizeof(struct v3f));
 	o->vertices[o->nb_vertices-1] = vertices_current; // set the last one
 
 	return o->nb_vertices;
@@ -43,7 +56,7 @@ int object_add_vertex(struct obj *o, struct v3f vertices_current) {
 int object_add_vertex_texture(struct obj *o, struct t2f vertices_texture_current) {
 	// add a new vertex
 	o->nb_vertices_texture += 1;
-	o->vertices_texture = realloc(o->vertices_texture, o->nb_vertices_texture * sizeof(struct t2f));
+	o->vertices_texture = xrealloc(o->vertices_texture, o->nb_vertices_texture * sizeof(struct t2f));
 	o->vertices_texture[o->nb_vertices_texture-1] = vertices_texture_current;
 
 	return o->nb_vertices_texture;
@@ -52,7 +65,7 @@ int object_add_vertex_texture(struct obj *o, struct t2f vertices_texture_current
 int object_add_vertex_normal(struct obj *o, struct v3f vertices_normal_current) {
 	// add a new vertex
 	o->nb_vertices_normal += 1;
-	o->vertices_normal = realloc(o->vertices_normal, o->nb_vertices_normal * sizeof(struct v3f));
+	o->vertices_normal = xrealloc(o->vertices_normal, o->nb_vertices_normal * sizeof(struct v3f));
 	o->vertices_normal[o->nb_vertices_normal-1] = v3f_normalize(vertices_normal_current);
 
 	return o->nb_vertices_normal;
@@ -89,7 +102,7 @@ static struct obj_faces object_parse_face(char *line) {
 int object_add_face(struct obj *o, struct obj_faces faces_current) {
 	// add a new vertex
 	o->nb_faces += 1;
-	o->faces = realloc(o->faces, o->nb_faces * sizeof(struct obj_faces));
+	o->faces = xrealloc(o->faces, o->nb_faces * sizeof(struct obj_faces));
 	o->faces[o->nb_faces-1] = faces_current;
 
 	return o->nb_faces;
@@ -112,7 +125,7 @@ struct obj *object_get_by_name(char *name) {
 struct obj *object_new_from_file(char *filename)
 {
 	nb_objects++;
-	objects = realloc(objects, nb_objects * sizeof(struct obj));
+	objects = xrealloc(objects, nb_objects * sizeof(struct obj));
 
 	struct obj *o = objects + (nb_objects - 1);
 	memset(o, 0, sizeof(*o));
