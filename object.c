@@ -180,9 +180,9 @@ int object_compile_arrays(struct obj *o) {
 	o->vertices_normal_array = calloc(o->nb_faces * 3, sizeof(struct v3f));
 
 	for (int i = 0; i < o->nb_faces; i++) {
+		struct obj_faces faces = o->faces[i];
 		for (int j = 0; j < 3; j++) {
 			int compiled_idx = i*3+j;
-			struct obj_faces faces = o->faces[i];
 			struct obj_face face = faces.face[j];
 
 			unsigned int vertice_normal_idx = face.normal;
