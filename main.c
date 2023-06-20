@@ -4,6 +4,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <stdbool.h>
 
 #include <assert.h>
 
@@ -92,8 +93,8 @@ void setupLights() {
 
 struct obj *cube;
 struct map map;
-int i_step = 1;
-int j_step = 1;
+int i_step = 4;
+int j_step = 4;
 
 int object_rotate_active = 1;
 
@@ -195,10 +196,14 @@ int main(int argc, char* argv[]) {
 	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 1 );
 	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
 
-	SDL_Window *window = SDL_CreateWindow( "GL Combat", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL );
-	SDL_GL_CreateContext(window);
+	int sdl_flags = 0;
+	sdl_flags |= SDL_WINDOW_RESIZABLE;
+	sdl_flags |= SDL_WINDOW_OPENGL;
+	sdl_flags |= SDL_WINDOW_SHOWN;
+	SDL_Window *window = SDL_CreateWindow( "GL Combat", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, sdl_flags);
 
-	SDL_GL_SetSwapInterval(1);
+	SDL_GL_CreateContext(window);
+	SDL_GL_SetSwapInterval(-1); // adaptive vsync
 
 	// Initialization de OpenGL
 	glEnable(GL_DEPTH_TEST);
@@ -261,6 +266,7 @@ int main(int argc, char* argv[]) {
 
 	uint32_t last_frame_tick = SDL_GetTicks();
 
+	bool fullScreen = false;
 	int quit = 0;
 	while (! quit) {
 		SDL_Event e;
@@ -290,6 +296,26 @@ int main(int argc, char* argv[]) {
 				switch(e.wheel.type) {
 				case SDL_MOUSEWHEEL:
 					camera_z += e.wheel.y;
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			if(e.type == SDL_WINDOWEVENT) {
+				switch(e.window.event) {
+				case SDL_WINDOWEVENT_RESIZED:
+					{
+						int new_width = e.window.data1;
+						int new_height = e.window.data2;
+						glViewport(0, 0, new_width, new_height);
+
+						glMatrixMode(GL_PROJECTION);
+						glLoadIdentity();
+						gluPerspective(60.0, 1.0 * new_width / new_height, 0.1, 1000.0);
+					}
+
 					break;
 
 				default:
@@ -337,6 +363,16 @@ int main(int argc, char* argv[]) {
 						i_step -= 1;
 						j_step -= 1;
 						if (i_step > 0 && j_step > 0) map_load(&map, MAP_FILE, i_step, j_step);
+
+						break;
+
+					case 'f':
+						fullScreen = !fullScreen;
+						if(fullScreen){
+							SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+						} else {
+							SDL_SetWindowFullscreen(window, 0);
+						}
 
 						break;
 				}
