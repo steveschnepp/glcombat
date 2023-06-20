@@ -10,7 +10,7 @@
 static int nb_objects = 0;
 static struct obj *objects = 0;
 
-#define QUANTIZE 4096
+#define QUANTIZE (4 * 1024 * 1024)
 static int quantize(int i) {
 	i /= QUANTIZE;
 	i ++;
