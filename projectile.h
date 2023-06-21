@@ -4,7 +4,7 @@
 
 struct projectile {
     struct {
-        int is_explosion : 1;
+        unsigned int is_explosion : 1;
     } props;
 
     struct v3f pos;

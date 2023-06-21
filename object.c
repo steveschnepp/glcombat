@@ -84,15 +84,15 @@ static struct obj_faces object_parse_face(char *line) {
 	assert(ret == 3);
 
 	object_str_tr(str1, '/', ' ');
-	ret = sscanf(str1, "%d %d %d", &faces.face[0].vertice, &faces.face[0].texture, &faces.face[0].normal);
+	ret = sscanf(str1, "%u %u %u", &faces.face[0].vertice, &faces.face[0].texture, &faces.face[0].normal);
 	assert(ret == 3);
 
 	object_str_tr(str2, '/', ' ');
-	ret = sscanf(str2, "%d %d %d", &faces.face[1].vertice, &faces.face[1].texture, &faces.face[1].normal);
+	ret = sscanf(str2, "%u %u %u", &faces.face[1].vertice, &faces.face[1].texture, &faces.face[1].normal);
 	assert(ret == 3);
 
 	object_str_tr(str3, '/', ' ');
-	ret = sscanf(str3, "%d %d %d", &faces.face[2].vertice, &faces.face[2].texture, &faces.face[2].normal);
+	ret = sscanf(str3, "%u %u %u", &faces.face[2].vertice, &faces.face[2].texture, &faces.face[2].normal);
 	assert(ret == 3);
 
 	return faces;

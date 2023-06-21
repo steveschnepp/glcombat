@@ -19,6 +19,8 @@
 #define OBJ_FILE "data/cube.obj"
 #define MAP_FILE "data/b1heightmap.map"
 
+#pragma GCC diagnostic ignored "-Wunused-function"
+
 int SCREEN_WIDTH = 640;
 int SCREEN_HEIGHT = 480;
 

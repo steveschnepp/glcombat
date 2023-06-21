@@ -30,7 +30,6 @@ const struct v3f gravity = { 0, 0, -10 }; // g = 10 m/s
 void projectile_update_all(uint32_t time_delta_ms, struct map *map)
 {
     float time_delta_s = time_delta_ms / 1000.0;
-    int do_gc = 0;
 
     for(int i = 0; i < new_bullet_idx; i ++) {
         struct projectile *p = bullets + i;

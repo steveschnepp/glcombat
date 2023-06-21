@@ -10,6 +10,7 @@ BINS=glcombat
 
 OPTIM_LEVEL=0
 CFLAGS+=-g
+CFLAGS+=-Wall -Werror -pedantic
 CFLAGS+=-O$(OPTIM_LEVEL)
 LDLIBS+=-lm
 

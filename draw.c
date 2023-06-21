@@ -74,8 +74,6 @@ void draw_obj(struct obj *o, struct v3f pos, struct v3f rot) {
 }
 
 void draw_light(int light, struct v3f pos, struct c4f col) {
-	float radius = 32;
-	float hover = 10;
 	int gl_light = GL_LIGHT0 + light;
 
 	glPushMatrix();

@@ -16,7 +16,7 @@ struct pool {
 
 #define POOL_MAX_SIZE (1<<15) // 32k elements per type should be enough for anyone :-p
 
-static void* pool_init(struct pool *pool, size_t pool_element_size)
+void* pool_init(struct pool *pool, size_t pool_element_size)
 {
     const struct pool EMPTY_POOL = { 0 };
     *pool = EMPTY_POOL;
@@ -25,7 +25,7 @@ static void* pool_init(struct pool *pool, size_t pool_element_size)
     return pool->data;
 }
 
-static void* pool_new(struct pool *pool, size_t pool_element_size)
+void* pool_new(struct pool *pool, size_t pool_element_size)
 {
     void* p = pool->data + pool->new_idx * pool_element_size;
     zero_memory(p, pool_element_size);
@@ -34,7 +34,7 @@ static void* pool_new(struct pool *pool, size_t pool_element_size)
     return p;
 }
 
-static int pool_del(struct pool *pool, size_t pool_element_size, int idx)
+int pool_del(struct pool *pool, size_t pool_element_size, int idx)
 {
     pool->new_idx --;
 
