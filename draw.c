@@ -119,7 +119,7 @@ void draw_light(int light, struct v3f pos, struct c4f col) {
 void draw_projectile(struct v3f pos, struct v3f vel) {
 
 	printf("draw_projectile pos x %f y %f z %f ", pos.x, pos.y, pos.z);
-	printf("vel x %f y %f z %f \n", vel.x, vel.y, vel.z);
+	printf("vel x %f y %f z %f", vel.x, vel.y, vel.z);
 	printf("\n");
 
 	const GLfloat ORANGE[]  = { 1, 0.647, 0, .2 };
