@@ -11,6 +11,7 @@
 #include "v3f.h"
 #include "object.h"
 #include "projectile.h"
+#include "unit.h"
 #include "map.h"
 #include "draw.h"
 
@@ -23,6 +24,8 @@ int SCREEN_HEIGHT = 480;
 
 int nb_call_gl_Vertex3f;
 int nb_call_gl_Vertex3fv;
+int nb_call_glDrawArrays;
+int nb_call_glDrawArrays_arrays;
 
 float x = 0;
 float y = 0;
@@ -91,10 +94,9 @@ void setupLights() {
 	}
 }
 
-struct obj *cube;
 struct map map;
-int i_step = 4;
-int j_step = 4;
+int i_step = 3;
+int j_step = 3;
 
 int object_rotate_active = 1;
 
@@ -106,6 +108,7 @@ void update(uint32_t delta_ms) {
 	angleY += 0.1 / 36;
 	angleZ += 0.1 / 36 / 36;
 
+	unit_update_all(delta_ms, &map);
 	projectile_update_all(delta_ms, &map);
 }
 
@@ -116,36 +119,6 @@ float camera_z = -65.0;
 float camera_rot_x = -70.0;
 float camera_rot_y = 0.0;
 float camera_rot_z = 44.0;
-
-void draw_reference() {
-	// Put a refernce point at the origin
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_LIGHTING);
-	glEnable (GL_BLEND);
-	glDepthMask (GL_FALSE);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-
-	glLineWidth(5.0);
-	glBegin(GL_LINES);
-		glColor4f(1, 0, 0, .25);
-		glVertex3f(0, 0, 0);  nb_call_gl_Vertex3f++;
-		glVertex3f(10, 0, 0); nb_call_gl_Vertex3f++;
-
-		glColor4f(0, 1, 0, .25);
-		glVertex3f(0, 0, 0);  nb_call_gl_Vertex3f++;
-		glVertex3f(0, 10, 0);  nb_call_gl_Vertex3f++;
-
-		glColor4f(0, 0, 1, .25);
-		glVertex3f(0, 0, 0); nb_call_gl_Vertex3f++;
-		glVertex3f(0, 0, 10);  nb_call_gl_Vertex3f++;
-	glEnd();
-	glLineWidth(1.0);
-
-	glDepthMask (GL_TRUE);
-	glDisable (GL_BLEND);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_DEPTH_TEST);
-}
 
 void draw() {
 	glClearColor(0, 0, 0, 0);
@@ -165,11 +138,11 @@ void draw() {
 
 	draw_map(&map);
 
-	struct v3f pos = {10 * cosfd(angleX), 10 * sinfd(angleX), map_get_height(&map, pos.x, pos.y) };
-	struct v3f rot = {0, 0, angleX};
-	draw_obj(cube, pos, rot);
+	for (int i = 0; i < new_unit_idx; i++) {
+		struct unit *p = units + i;
+		draw_unit(p);
+	}
 
-	printf("new_bullet_idx %d \n", new_bullet_idx);
 	for (int i = 0; i < new_bullet_idx; i++) {
 		struct projectile *p = bullets + i;
 		if (p->props.is_explosion) {
@@ -202,6 +175,8 @@ int main(int argc, char* argv[]) {
 
 	SDL_GL_CreateContext(window);
 	SDL_GL_SetSwapInterval(-1); // adaptive vsync
+
+	SDL_RaiseWindow(window);
 
 	// Initialization de OpenGL
 	glEnable(GL_DEPTH_TEST);
@@ -253,7 +228,7 @@ int main(int argc, char* argv[]) {
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 #endif
 
-	cube = object_new_from_file(OBJ_FILE);
+	object_new_from_file(OBJ_FILE);
 	map_load(&map, MAP_FILE, i_step, j_step);
 
 	{
@@ -363,6 +338,15 @@ int main(int argc, char* argv[]) {
 						if (i_step > 0 && j_step > 0) map_load(&map, MAP_FILE, i_step, j_step);
 
 						break;
+					case 'r':
+						new_unit_idx = 0;
+					case 't':
+						for (int i = 0; i < 1024; i ++) {
+							struct v3f pos = {0};
+							unit_new(pos);
+						}
+
+						break;
 
 					case 'f':
 						fullScreen = !fullScreen;
@@ -389,11 +373,12 @@ int main(int argc, char* argv[]) {
 		printf("camera:     x % 11.4f y % 11.4f z % 11.4f\n", camera_x, camera_y, camera_z);
 		printf("camera_rot: x % 11.4f y % 11.4f z % 11.4f\n", camera_rot_x, camera_rot_y, camera_rot_z);
 		printf("glVertex:   3f % 10d 3fv % 9d\n", nb_call_gl_Vertex3f, nb_call_gl_Vertex3fv);
+		printf("pool: unit %10d bullet %10d\n", new_unit_idx, new_bullet_idx);
 		printf("map_steps:  i  % 10d j % 12d\n", i_step, j_step);
 
 		SDL_GL_SwapWindow(window);
 
-		nb_call_gl_Vertex3f = nb_call_gl_Vertex3fv = 0;
+		nb_call_gl_Vertex3f = nb_call_gl_Vertex3fv = nb_call_glDrawArrays = nb_call_glDrawArrays_arrays = 0;
 
 		last_frame_tick = start_draw_tick;
 	}

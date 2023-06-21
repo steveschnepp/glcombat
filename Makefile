@@ -28,11 +28,8 @@ clean: $(SUBDIRS)
 
 .PHONY: $(TOPTARGETS) $(SUBDIRS)
 
--include $(DEPS)
-
 # automatically generate dependency rules
-
-%.d : %.c
+%.d: %.c
 	$(CC) $(CCFLAGS) -MF"$@" -MG -MM -MP -MT"$@" -MT"$(<:.c=.o)" "$<"
 
 # -MF  write the generated dependency rule to a file
@@ -40,3 +37,4 @@ clean: $(SUBDIRS)
 # -MM  generate dependency rule for prerequisite, skipping system headers
 # -MP  add phony target for each header to prevent errors when header is missing
 # -MT  add a target to the generated dependency
+-include $(DEPS)

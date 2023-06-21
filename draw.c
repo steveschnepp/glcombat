@@ -4,9 +4,12 @@
 #include <assert.h>
 
 #include "draw.h"
+#include "unit.h"
 
 extern int nb_call_gl_Vertex3f;
 extern int nb_call_gl_Vertex3fv;
+extern int nb_call_glDrawArrays;
+extern int nb_call_glDrawArrays_arrays;
 
 static void draw_obj_gl(struct obj *o);
 static void draw_map_gl(struct map *m);
@@ -16,12 +19,15 @@ static void draw_map_gl(struct map *m) {
 }
 
 void draw_map(struct map *m) {
+
 	glPushMatrix();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
 	glEnable( GL_POLYGON_OFFSET_FILL );
 	glPolygonOffset( 1.0, 1.0 );
-	glColor3f(1, 1, 1);
+
+	const GLfloat WHITE[]  = { 1, 1, 1, 1 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, WHITE);
 	draw_map_gl(m);
 
 	glPopMatrix();
@@ -34,8 +40,8 @@ static void draw_obj_gl(struct obj *o) {
 	glVertexPointer(3, GL_FLOAT, 0, o->vertices_array);
 	glNormalPointer(GL_FLOAT, 0, o->vertices_normal_array);
 
-	printf("glDrawArrays size %d \n", o->nb_faces * 3);
 	glDrawArrays(GL_TRIANGLES, 0, o->nb_faces * 3);
+	nb_call_glDrawArrays ++; nb_call_glDrawArrays_arrays += o->nb_faces * 3;
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -63,15 +69,6 @@ void draw_obj(struct obj *o, struct v3f pos, struct v3f rot) {
 		glColor3f(.1, .1, .1);
 		draw_obj_gl(o);
 	}
-
-	glDisable(GL_LIGHTING);
-	glLineWidth(1.0);
-	glBegin(GL_LINES);
-		glColor4f(1, 0, 0, .25);
-		glVertex3f(0, 0, 0); nb_call_gl_Vertex3f++;
-		glVertex3f(0, 0, -100); nb_call_gl_Vertex3f++;
-	glEnd();
-	glEnable(GL_LIGHTING);
 
 	glPopMatrix();
 }
@@ -114,6 +111,36 @@ void draw_light(int light, struct v3f pos, struct c4f col) {
 	glPointSize(1.0);
 
 	glPopMatrix();
+}
+
+void draw_reference() {
+	// Put a refernce point at the origin
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
+	glEnable (GL_BLEND);
+	glDepthMask (GL_FALSE);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+
+	glLineWidth(5.0);
+	glBegin(GL_LINES);
+		glColor4f(1, 0, 0, .25);
+		glVertex3f(0, 0, 0);  nb_call_gl_Vertex3f++;
+		glVertex3f(10, 0, 0); nb_call_gl_Vertex3f++;
+
+		glColor4f(0, 1, 0, .25);
+		glVertex3f(0, 0, 0);  nb_call_gl_Vertex3f++;
+		glVertex3f(0, 10, 0);  nb_call_gl_Vertex3f++;
+
+		glColor4f(0, 0, 1, .25);
+		glVertex3f(0, 0, 0); nb_call_gl_Vertex3f++;
+		glVertex3f(0, 0, 10);  nb_call_gl_Vertex3f++;
+	glEnd();
+	glLineWidth(1.0);
+
+	glDepthMask (GL_TRUE);
+	glDisable (GL_BLEND);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void draw_projectile(struct v3f pos, struct v3f vel) {
@@ -168,4 +195,22 @@ void draw_explosion(struct v3f pos, float size) {
 	glEnable(GL_LIGHTING);
 
 	glPopMatrix();
+}
+
+void draw_unit(struct unit *u) {
+	struct obj *cube = object_get_by_name("cube");
+	GLfloat color[]  = { u->color.r, u->color.g, u->color.b, u->color.a };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color);
+	draw_obj(cube, u->pos, u->rot);
+
+#if 0
+	glDisable(GL_LIGHTING);
+	glLineWidth(1.0);
+	glBegin(GL_LINES);
+		glColor4fv(GREEN);
+		glVertex3fv(v3f_to_f3v(&pos)); nb_call_gl_Vertex3fv++;
+		glVertex3fv(v3f_to_f3v(&destination)); nb_call_gl_Vertex3fv++;
+	glEnd();
+	glEnable(GL_LIGHTING);
+#endif
 }

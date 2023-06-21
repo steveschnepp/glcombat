@@ -27,8 +27,6 @@ struct projectile* projectile_new(struct v3f pos, struct v3f delta)
 
 const struct v3f gravity = { 0, 0, -10 }; // g = 10 m/s
 
-#define MAP_FLOOR -100
-
 void projectile_update_all(uint32_t time_delta_ms, struct map *map)
 {
     float time_delta_s = time_delta_ms / 1000.0;
