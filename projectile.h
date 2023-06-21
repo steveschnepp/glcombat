@@ -4,7 +4,6 @@
 
 struct projectile {
     struct {
-        int is_used : 1;
         int is_explosion : 1;
     } props;
 
@@ -14,7 +13,7 @@ struct projectile {
 
 #define MAX_BULLETS 1024
 
-extern int max_bullet_idx;
+extern int new_bullet_idx;
 extern struct projectile bullets[MAX_BULLETS];
 
 struct map;

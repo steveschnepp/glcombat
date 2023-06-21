@@ -169,11 +169,9 @@ void draw() {
 	struct v3f rot = {0, 0, angleX};
 	draw_obj(cube, pos, rot);
 
-	printf("max_bullet_idx %d \n", max_bullet_idx);
-	for (int i = 0; i < max_bullet_idx; i++) {
+	printf("new_bullet_idx %d \n", new_bullet_idx);
+	for (int i = 0; i < new_bullet_idx; i++) {
 		struct projectile *p = bullets + i;
-		if (! p->props.is_used) continue;
-
 		if (p->props.is_explosion) {
 			draw_explosion(p->pos, p->delta.x);
 		} else {

@@ -10,37 +10,19 @@ static void zero_memory(void *s, size_t n)
     memset(s, 0, n);
 }
 
-int max_bullet_idx;
+int new_bullet_idx = 0;
 struct projectile bullets[MAX_BULLETS];
 
 struct projectile* projectile_new(struct v3f pos, struct v3f delta)
 {
-    for(int i = 0; i < MAX_BULLETS; i ++) {
-        struct projectile *p = bullets + i;
-        if (! p->props.is_used) {
-            zero_memory(p, sizeof(struct projectile));
-            p->props.is_used = 1;
-            p->pos = pos;
-            p->delta = delta;
+    // append at the end
+    struct projectile* p = bullets + new_bullet_idx;
+    zero_memory(p, sizeof(struct projectile));
+    p->pos = pos;
+    p->delta = delta;
+    new_bullet_idx++;
 
-            if (max_bullet_idx < i) max_bullet_idx = i;
-
-            return p;
-        }
-    }
-
-    return NULL;
-}
-
-void projectile_gc()
-{
-    max_bullet_idx = 0;
-    for(int i = 0; i < MAX_BULLETS; i ++) {
-        struct projectile *p = bullets + i;
-        if (p->props.is_used) {
-            if (max_bullet_idx < i) max_bullet_idx = i;
-        }
-    }
+    return p;
 }
 
 const struct v3f gravity = { 0, 0, -10 }; // g = 10 m/s
@@ -52,17 +34,18 @@ void projectile_update_all(uint32_t time_delta_ms, struct map *map)
     float time_delta_s = time_delta_ms / 1000.0;
     int do_gc = 0;
 
-    for(int i = 0; i < MAX_BULLETS; i ++) {
+    for(int i = 0; i < new_bullet_idx; i ++) {
         struct projectile *p = bullets + i;
-        if (! p->props.is_used) {
-            continue;
-        }
-
         if (p->props.is_explosion) {
             p->delta.x *= 1.5;
             if (p->delta.x > 3) {
-                do_gc = 1;
-                p->props.is_used = 0;
+                // Remove it by copying the last one here.
+                p[i] = p[new_bullet_idx-1];
+                new_bullet_idx --;
+
+                // process this one
+                i --;
+                continue;
             }
             continue;
         }
@@ -83,6 +66,4 @@ void projectile_update_all(uint32_t time_delta_ms, struct map *map)
              p->delta.y = p->delta.z = 0;
         }
     }
-
-    if (do_gc) projectile_gc();
 }
