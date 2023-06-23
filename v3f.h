@@ -1,4 +1,4 @@
-#ifndef __V3F_H__
+ú#ifndef __V3F_H__
 #define __V3F_H__
 
 
@@ -18,12 +18,6 @@ static inline struct v3f v3f_create(float x, float y, float z)
   this.x = x; this.y = y; this.z = z;
   return this;
 }
-
-static inline float* v3f_array(struct v3f *this)
-{
-  return (float*) this;
-}
-
 static inline struct v3f v3f_add(struct v3f this, struct v3f v)
 {
   this.x += v.x; this.y += v.y; this.z += v.z;
@@ -60,7 +54,7 @@ static inline struct v3f v3f_div(struct v3f this, float s)
   return this;
 }
 
-static inline struct v3f v3f_meg(struct v3f this)
+static inline struct v3f v3f_neg(struct v3f this)
 {
   return v3f_mul(this, -1);
 }
