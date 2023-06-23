@@ -4,22 +4,46 @@
 SRCS=$(wildcard *.c)
 BINS=$(SRCS:.c=)
 
+ifeq ($(OS),Windows_NT)
+EXT=.exe
+endif
+
+%$(EXT): %.o
+	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
+EXES=$(BINS:=$(EXT))
+
 CFLAGS+=-g
 CFLAGS+=-O0
 CFLAGS+=-I..
 LDLIBS+=-lm
 
-all: $(BINS)
+all: $(EXES)
 
-sphere: LDLIBS=-lglut -lGL -lm
+test_object$(EXT): ../object.c ../object.h
 
-test_object: test_object.c ../object.c ../object.h
+test_map$(EXT): ../map.c ../map.h ../object.c ../object.h
 
-test_map: test_map.c ../map.c ../map.h ../object.c ../object.h
+img2map$(EXT): LDLIBS=$(shell pkg-config --libs gdlib)
+img2map$(EXT): CFLAGS=$(shell pkg-config --libs gdlib)
 
-img2map: LDLIBS=-lgd
+$(SUBDIRS):
+	$(MAKE) -C $@ $(MAKECMDGOALS)
 
-clean:
-	rm -f $(OBJS) $(BINS)
+clean: $(SUBDIRS)
+	rm -f $(OBJS) $(EXES)
 
-.PHONY: all clean
+cleaner: $(SUBDIRS) clean
+	[ -z "$(DEPS)" ] || rm -f $(DEPS)
+
+.PHONY: all clean cleaner
+
+# automatically generate dependency rules
+%.d: %.c
+		$(CC) $(CCFLAGS) -MF"$@" -MG -MM -MP -MT"$@" -MT"$(<:.c=.o)" "$<"
+
+# -MF  write the generated dependency rule to a file
+# -MG  assume missing headers will be generated and don't stop with an error
+# -MM  generate dependency rule for prerequisite, skipping system headers
+# -MP  add phony target for each header to prevent errors when header is missing
+# -MT  add a target to the generated dependency
+-include $(DEPS)

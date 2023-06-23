@@ -3,12 +3,12 @@
 #include "v3f.h"
 
 struct projectile {
-    struct {
-        unsigned int is_explosion : 1;
-    } props;
-
     struct v3f pos;
     struct v3f delta;
+
+    struct {
+        unsigned int is_explosion ;
+    } props;
 };
 
 #define MAX_BULLETS 1024

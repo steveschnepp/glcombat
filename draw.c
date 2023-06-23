@@ -147,7 +147,7 @@ void draw_projectile(struct v3f pos, struct v3f vel) {
 	printf("vel x %f y %f z %f", vel.x, vel.y, vel.z);
 	printf("\n");
 
-	const GLfloat ORANGE[]  = { 1, 0.647, 0, .2 };
+	const GLfloat ORANGE[]  = { 1, 0.647, 0, 0.7 };
 
 	glDisable(GL_LIGHTING);
 	glEnable (GL_BLEND);
@@ -171,7 +171,7 @@ void draw_explosion(struct v3f pos, float size) {
 	printf("draw_explosion pos x %f y %f z %f size %f", pos.x, pos.y, pos.z, size);
 	printf("\n");
 
-	const GLfloat YELLOW[]  = { 1, 1, 0, 0.2 };
+	const GLfloat YELLOW[]  = { 1, 1, 0, 0.5 };
 
 	glPushMatrix();
 	glTranslatef(pos.x, pos.y, pos.z);

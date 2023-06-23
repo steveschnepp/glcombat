@@ -8,16 +8,24 @@ OBJS=$(SRCS:.c=.o)
 DEPS=$(SRCS:.c=.d)
 BINS=glcombat
 
+ifeq ($(OS),Windows_NT)
+EXT=.exe
+endif
+EXES=$(BINS:=$(EXT))
+
+%$(EXT): %.o
+	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
 OPTIM_LEVEL=0
 CFLAGS+=-g
 CFLAGS+=-Wall -Werror -pedantic
 CFLAGS+=-O$(OPTIM_LEVEL)
+CFLAGS+=$(CFLAGS_EXTRA)
 LDLIBS+=-lm
 
-all: $(BINS)  $(SUBDIRS)
+all: $(SUBDIRS) $(EXES)
 
-glcombat: $(OBJS)
-	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
+$(EXES): $(OBJS)
 
 $(TOPTARGETS): $(SUBDIRS)
 
@@ -25,13 +33,19 @@ $(SUBDIRS):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
 clean: $(SUBDIRS)
-	rm -f $(OBJS) $(BINS) $(DEPS)
+	rm -f $(OBJS) $(EXES)
 
+cleaner: $(SUBDIRS) clean
+	[ -z "$(DEPS)" ] || rm -f $(DEPS)
+
+.PHONY: all clean cleaner
+
+.INTERMEDIATE: $(OBJS)
 .PHONY: $(TOPTARGETS) $(SUBDIRS)
 
 # automatically generate dependency rules
 %.d: %.c
-	$(CC) $(CCFLAGS) -MF"$@" -MG -MM -MP -MT"$@" -MT"$(<:.c=.o)" "$<"
+		$(CC) $(CCFLAGS) -MF"$@" -MG -MM -MP -MT"$@" -MT"$(<:.c=.o)" "$<"
 
 # -MF  write the generated dependency rule to a file
 # -MG  assume missing headers will be generated and don't stop with an error
