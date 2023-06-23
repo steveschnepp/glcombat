@@ -1,4 +1,4 @@
-ú#ifndef __V3F_H__
+#ifndef __V3F_H__
 #define __V3F_H__
 
 
