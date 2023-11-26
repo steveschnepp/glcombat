@@ -143,9 +143,11 @@ void draw_reference() {
 
 void draw_projectile(struct v3f pos, struct v3f vel) {
 
+#if DEBUG_DRAW
 	printf("draw_projectile pos x %f y %f z %f ", pos.x, pos.y, pos.z);
 	printf("vel x %f y %f z %f", vel.x, vel.y, vel.z);
 	printf("\n");
+#endif // DEBUG_DRAW
 
 	const GLfloat ORANGE[]  = { 1, 0.647, 0, 0.7 };
 
@@ -168,8 +170,10 @@ void draw_projectile(struct v3f pos, struct v3f vel) {
 static GLUquadricObj *qobj;
 
 void draw_explosion(struct v3f pos, float size) {
+#if DEBUG_DRAW
 	printf("draw_explosion pos x %f y %f z %f size %f", pos.x, pos.y, pos.z, size);
 	printf("\n");
+#endif // DEBUG_DRAW
 
 	const GLfloat YELLOW[]  = { 1, 1, 0, 0.5 };
 
