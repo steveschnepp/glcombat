@@ -40,7 +40,6 @@ cleaner: $(SUBDIRS) clean
 
 .PHONY: all clean cleaner
 
-.INTERMEDIATE: $(OBJS)
 .PHONY: $(TOPTARGETS) $(SUBDIRS)
 
 # automatically generate dependency rules
