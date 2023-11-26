@@ -1,6 +1,6 @@
 #include "usdl.h"
 
-#include "SDL_Image.h"
+#include "SDL_image.h"
 
 SDL_Window *window;
 SDL_Renderer *renderer;

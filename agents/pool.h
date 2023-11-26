@@ -111,8 +111,8 @@ POOL_LINKAGE size_t POOL_len(POOL_NAME * array)
 }
 
 POOL_LINKAGE void POOL_dump(POOL_NAME * array) {
-    hex_dump("pool", array, sizeof(POOL_NAME), 16);
-    hex_dump("pool->items", array->items, array->capacity * sizeof(POOL_T), 16);
+    hexDump("pool", array, sizeof(POOL_NAME), 16);
+    hexDump("pool->items", array->items, array->capacity * sizeof(POOL_T), 16);
 }
 
 #elif

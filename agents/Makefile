@@ -1,5 +1,5 @@
-CFLAGS=$(shell pkg-config --cflags sdl2 sdl2_image)
-LDLIBS=$(shell pkg-config --libs sdl2 sdl2_image)
+CFLAGS=$(shell pkg-config --cflags sdl2 SDL2_image)
+LDLIBS=$(shell pkg-config --libs sdl2 SDL2_image)
 
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
