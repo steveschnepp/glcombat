@@ -182,13 +182,13 @@ int main(int argc, char* argv[])
 #else // OPENGL_ENABLED
 		SDL_RenderPresent(renderer);
 #endif // OPENGL_ENABLED
-		uint32_t end_sync_tick = SDL_GetTicks();
-		printf(
-			"updated %d draw %d wait %d ms\n",
-			start_draw_tick - start_frame_tick,
-			end_draw_tick - start_draw_tick,
-			end_sync_tick - end_draw_tick
-		);
+		{
+			uint32_t end_sync_tick = SDL_GetTicks();
+			uint32_t update_ticks = start_draw_tick - start_frame_tick;
+			uint32_t draw_ticks = end_draw_tick - start_draw_tick;
+			uint32_t wait_ticks = end_sync_tick - end_draw_tick;
+			printf("updated %d draw %d wait %d ms\n", update_ticks, draw_ticks, wait_ticks);
+		}
 
 		last_frame_tick = start_frame_tick;
 	}

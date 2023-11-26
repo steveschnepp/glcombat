@@ -25,11 +25,12 @@ enum draw_keepscreen {
     UDSL_CLEARSCREEN = 1,
 };
 
-/**
+/** 
  * Callback when drawing a frame
- *
+ * 
+ * @param frame current frame to display
  * @return 0 if the screen shall not be cleared on the next frame
- *
+ * 
 */
 enum draw_keepscreen draw(unsigned long frame);
 void update(uint32_t delta_ms);

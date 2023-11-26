@@ -3,11 +3,14 @@
 
 #include "usdl.h"
 
+typedef struct {
+    float x, y;
+} agent;
+
+#define POOL_T agent
+#include "pool.h"
+
 char *APP_TITLE = "Agents Tech Demo";
-
-int should_update = 0;
-float power = 1.0;
-
 
 void update(uint32_t delta_ms)
 {
