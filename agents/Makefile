@@ -9,7 +9,7 @@ BINS=$(lastword $(subst /, ,$(dir $(realpath $(lastword $(MAKEFILE_LIST))))))
 ifeq ($(OS),Windows_NT)
 EXT=.exe
 # show stdout
-#LDLIBS+=-mconsole
+LDLIBS+=-mconsole
 endif
 
 EXES=$(BINS:=$(EXT))

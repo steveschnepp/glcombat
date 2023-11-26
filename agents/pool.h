@@ -4,6 +4,8 @@
 // needed for all instantiations can go up here.
 #include <stdlib.h>		// realloc, size_t
 
+#include "dump.h"
+
 #define POOL_IMPL(word) POOL_COMB1(POOL_PREFIX,word)
 #define POOL_COMB1(pre, word) POOL_COMB2(pre, word)
 #define POOL_COMB2(pre, word) pre##word
@@ -48,6 +50,7 @@ struct POOL_NAME {
 #define POOL_get POOL_IMPL(get)
 #define POOL_len POOL_IMPL(len)
 #define POOL_resize POOL_IMPL(resize)
+#define POOL_dump POOL_IMPL(dump)
 
 POOL_LINKAGE void POOL_add(POOL_NAME * array, POOL_T item);
 
@@ -56,6 +59,8 @@ POOL_LINKAGE void POOL_del(POOL_NAME * array, int idx);
 POOL_LINKAGE POOL_T * POOL_get(POOL_NAME * array, int idx);
 
 POOL_LINKAGE size_t POOL_len(POOL_NAME * array);
+
+POOL_LINKAGE void POOL_dump(POOL_NAME * array);
 
 #ifndef POOL_DECLS_ONLY
 static inline size_t max(size_t a, size_t b, size_t c)
@@ -105,6 +110,11 @@ POOL_LINKAGE size_t POOL_len(POOL_NAME * array)
     return array->count;
 }
 
+POOL_LINKAGE void POOL_dump(POOL_NAME * array) {
+    hex_dump("pool", array, sizeof(POOL_NAME), 16);
+    hex_dump("pool->items", array->items, array->capacity * sizeof(POOL_T), 16);
+}
+
 #elif
 #undef POOL_DECLS_ONLY
 #endif
@@ -117,3 +127,5 @@ POOL_LINKAGE size_t POOL_len(POOL_NAME * array)
 #undef POOL_NAME
 #undef POOL_LINKAGE
 #undef POOL_push
+
+
