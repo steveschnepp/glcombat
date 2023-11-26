@@ -16,6 +16,6 @@ jobs:
     - name: update deps
       run: sudo apt-get -y update
     - name: install deps
-      run: sudo apt-get -y install libsdl2-dev libgd-dev
+      run: sudo apt-get -y install libsdl2-dev libsdl2-image-dev libgd-dev
     - name: make
       run: make
