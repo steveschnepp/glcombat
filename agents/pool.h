@@ -2,16 +2,16 @@
 #define __POOL_H__
 // Inline functions, #defines and includes that will be
 // needed for all instantiations can go up here.
-#include <stdlib.h> // realloc, size_t
+#include <stdlib.h>		// realloc, size_t
 
 #define POOL_IMPL(word) POOL_COMB1(POOL_PREFIX,word)
 #define POOL_COMB1(pre, word) POOL_COMB2(pre, word)
 #define POOL_COMB2(pre, word) pre##word
 
-#endif // __POOL_H__
+#endif				// __POOL_H__
 
 #ifndef POOL_T
-typedef void* opaque;
+typedef void *opaque;
 #define POOL_T opaque
 #endif
 
@@ -28,17 +28,17 @@ typedef void* opaque;
 #endif
 
 // Customize the linkage of the function.
-#ifndef POOL_LINKAGE 
+#ifndef POOL_LINKAGE
 #ifndef POOL_DECLS_ONLY
 #define POOL_LINKAGE static inline
 #else
-#define POOL_LINKAGE 
+#define POOL_LINKAGE
 #endif
 #endif
 
 typedef struct POOL_NAME POOL_NAME;
 struct POOL_NAME {
-    POOL_T* items;
+    POOL_T *items;
     size_t count;
     size_t capacity;
 };
@@ -49,33 +49,31 @@ struct POOL_NAME {
 #define POOL_len POOL_IMPL(len)
 #define POOL_resize POOL_IMPL(resize)
 
-POOL_LINKAGE
-void POOL_add(POOL_NAME* array, POOL_T item);
+POOL_LINKAGE void POOL_add(POOL_NAME * array, POOL_T item);
 
-POOL_LINKAGE
-void POOL_del(POOL_NAME* array, int idx);
+POOL_LINKAGE void POOL_del(POOL_NAME * array, int idx);
 
-POOL_LINKAGE
-POOL_T* POOL_get(POOL_NAME* array, int idx);
+POOL_LINKAGE POOL_T * POOL_get(POOL_NAME * array, int idx);
 
-POOL_LINKAGE
-size_t POOL_len(POOL_NAME* array);
+POOL_LINKAGE size_t POOL_len(POOL_NAME * array);
 
 #ifndef POOL_DECLS_ONLY
-static inline
-size_t max(size_t a, size_t b, size_t c) {
+static inline size_t max(size_t a, size_t b, size_t c)
+{
     size_t max_ab;
     size_t max_abc;
-    
+
     max_ab = a > b ? a : b;
     max_abc = max_ab > c ? max_ab : c;
-    
+
     return max_abc;
 }
 
-static inline void POOL_resize(POOL_NAME* array, size_t count) {
-    if (array->capacity >= count) return;
-    
+static inline void POOL_resize(POOL_NAME * array, size_t count)
+{
+    if (array->capacity >= count)
+	return;
+
     size_t old_cap = array->capacity;
     size_t new_cap = max(4, count, old_cap * 2);
     size_t new_size = new_cap * sizeof(POOL_T);
@@ -83,27 +81,27 @@ static inline void POOL_resize(POOL_NAME* array, size_t count) {
     array->capacity = new_cap;
 }
 
-POOL_LINKAGE
-void POOL_add(POOL_NAME* array, POOL_T item){
+POOL_LINKAGE void POOL_add(POOL_NAME * array, POOL_T item)
+{
     POOL_resize(array, array->count + 1);
     array->items[array->count] = item;
-    array->count ++;
+    array->count++;
 }
 
-POOL_LINKAGE
-void POOL_del(POOL_NAME* array, int idx){
+POOL_LINKAGE void POOL_del(POOL_NAME * array, int idx)
+{
     // Copy the last item in place to compress the pool
     array->items[idx] = array->items[array->count - 1];
-    array->count --;
+    array->count--;
 }
 
-POOL_LINKAGE
-POOL_T* POOL_get(POOL_NAME* array, int idx){
+POOL_LINKAGE POOL_T * POOL_get(POOL_NAME * array, int idx)
+{
     return array->items + idx;
 }
 
-POOL_LINKAGE
-size_t POOL_len(POOL_NAME* array){
+POOL_LINKAGE size_t POOL_len(POOL_NAME * array)
+{
     return array->count;
 }
 
