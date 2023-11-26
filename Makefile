@@ -1,4 +1,4 @@
-SUBDIRS := gl
+SUBDIRS := gl agents
 TOPTARGETS := all clean cleaner
 
 all: $(SUBDIRS) $(EXES)

@@ -16,7 +16,7 @@ EXES=$(BINS:=$(EXT))
 %$(EXT): %.o
 	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-OPTIM_LEVEL=0
+OPTIM_LEVEL?=g
 CFLAGS+=-g
 CFLAGS+=-Wall -Werror -pedantic
 CFLAGS+=-O$(OPTIM_LEVEL)

@@ -19,9 +19,9 @@ $(EXES): main.o
 
 $(EXES): $(OBJS)
 
-OPTIM=g
+OPTIM_LEVEL?=g
 CFLAGS+=-g
-CFLAGS+=-O$(OPTIM)
+CFLAGS+=-O$(OPTIM_LEVEL)
 LDLIBS+=-lm
 CFLAGS+=-DUSDL_APPNAME=$(BINS)
 CFLAGS+=-Wall -Werror -pedantic

@@ -12,8 +12,9 @@ endif
 	$(LINK.c) $^ $(LOADLIBES) $(LDLIBS) -o $@
 EXES=$(BINS:=$(EXT))
 
+OPTIM_LEVEL?=g
 CFLAGS+=-g
-CFLAGS+=-O0
+CFLAGS+=-O$(OPTIM_LEVEL)
 CFLAGS+=-I..
 LDLIBS+=-lm
 
